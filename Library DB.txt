@@ -1,0 +1,536 @@
+**LIBRARY DATABASE**
+
+
+Setting environment for using XAMPP for Windows.
+
+mysql -u root -p -h 127.0.0.1
+Enter password:
+Welcome to the MariaDB monitor.  Commands end with ; or \g.
+Your MariaDB connection id is 3
+Server version: 10.1.38-MariaDB mariadb.org binary distribution
+
+Copyright (c) 2000, 2018, Oracle, MariaDB Corporation Ab and others.
+
+Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
+
+
+creating and using database(schema)
+
+MariaDB [(none)]> CREATE DATABASE LIBRARY;
+
+MariaDB [(none)]> SHOW DATABASES;
++--------------------+
+| Database           |
++--------------------+
+| company            |
+| examples           |
+| information_schema |
+| library            |
+| mysql              |
+| performance_schema |
+| phpmyadmin         |
+| test
+
+MariaDB [(none)]> USE LIBRARY;
+Database changed
+
+
+Creating Tables:-
+
+Book
+
+CREATE TABLE BOOK(
+    BOOK_ID INT(4)PRIMARY KEY,
+    TITLE VARCHAR(30),
+    PUB_NAME VARCHAR(25),
+    PUB_YEAR INT(4));
+
+MariaDB [LIBRARY]> DESC BOOK;
++----------+-------------+------+-----+---------+-------+
+| Field    | Type        | Null | Key | Default | Extra |
++----------+-------------+------+-----+---------+-------+
+| BOOK_ID  | int(4)      | NO   | PRI | NULL    |       |
+| TITLE    | varchar(30) | YES  |     | NULL    |       |
+| PUB_NAME | varchar(25) | YES  |     | NULL    |       |
+| PUB_YEAR | int(4)      | YES  |     | NULL    |       |
++----------+-------------+------+-----+---------+-------+
+
+Book Author
+
+CREATE TABLE BOOK_AUTHOR(
+   BOOK_ID INT(4),
+   AUTHOR_NAME VARCHAR(25),
+   CONSTRAINT FK FOREIGN KEY(BOOK_ID)REFERENCES BOOK(BOOK_ID) ON DELETE CASCADE,
+   PRIMARY KEY(BOOK_ID,AUTHOR_NAME));
+
+MariaDB [LIBRARY]> DESC BOOK_AUTHOR;
++-------------+-------------+------+-----+---------+-------+
+| Field       | Type        | Null | Key | Default | Extra |
++-------------+-------------+------+-----+---------+-------+
+| BOOK_ID     | int(4)      | NO   | PRI | NULL    |       |
+| AUTHOR_NAME | varchar(25) | NO   | PRI | NULL    |       |
++-------------+-------------+------+-----+---------+-------+
+
+Publisher
+
+CREATE TABLE PUBLISHER(
+    PUB_ID INT(4) PRIMARY KEY,
+    NAME VARCHAR(30),
+    ADDRESS VARCHAR(20),
+    PHONE BIGINT(10)
+   );
+
+MariaDB [LIBRARY]> DESC PUBLISHER;
++---------+-------------+------+-----+---------+-------+
+| Field   | Type        | Null | Key | Default | Extra |
++---------+-------------+------+-----+---------+-------+
+| PUB_ID  | int(4)      | NO   | PRI | NULL    |       |
+| NAME    | varchar(30) | YES  |     | NULL    |       |
+| ADDRESS | varchar(20) | YES  |     | NULL    |       |
+| PHONE   | bigint(10)  | YES  |     | NULL    |       |
++---------+-------------+------+-----+---------+-------+
+
+Library Branch
+
+CREATE TABLE LIBRARY_BRANCH(
+   BRANCH_ID VARCHAR(5) PRIMARY KEY,
+   BRANCH_NAME VARCHAR(10),
+   ADDRESS VARCHAR(30)
+ );
+
+MariaDB [LIBRARY]> DESC LIBRARY_BRANCH;
++-------------+-------------+------+-----+---------+-------+
+| Field       | Type        | Null | Key | Default | Extra |
++-------------+-------------+------+-----+---------+-------+
+| BRANCH_ID   | varchar(5)  | NO   | PRI | NULL    |       |
+| BRANCH_NAME | varchar(10) | YES  |     | NULL    |       |
+| ADDRESS     | varchar(30) | YES  |     | NULL    |       |
++-------------+-------------+------+-----+---------+-------+
+
+Book Copies
+
+CREATE TABLE BOOK_COPIES(
+   BOOK_ID INT(4),
+   BRANCH_ID VARCHAR(5),
+   NO_OF_COPIES INT(2),
+  CONSTRAINT FK_BRANCH_ID FOREIGN KEY(BRANCH_ID) REFERENCES LIBRARY_BRANCH(BRANCH_ID)ON DELETE CASCADE,
+CONSTRAINT FK_BOOK_ID FOREIGN KEY(BOOK_ID) REFERENCES BOOK(BOOK_ID)ON DELETE CASCADE,
+    PRIMARY KEY(BOOK_ID,BRANCH_ID)
+);
+
+MariaDB [LIBRARY]> DESC BOOK_COPIES;
++--------------+------------+------+-----+---------+-------+
+| Field        | Type       | Null | Key | Default | Extra |
++--------------+------------+------+-----+---------+-------+
+| BOOK_ID      | int(4)     | NO   | PRI | NULL    |       |
+| BRANCH_ID    | varchar(5) | NO   | PRI | NULL    |       |
+| NO_OF_COPIES | int(2)     | YES  |     | NULL    |       |
++--------------+------------+------+-----+---------+-------+
+
+Book Lending
+
+CREATE TABLE BOOK_LENDING(
+BOOK_ID INT(4),
+BRANCH_ID VARCHAR(5),
+CARD_NO VARCHAR(4) NOT NULL,
+DATE_OUT DATE,
+DUE_DATE DATE,
+CONSTRAINT FK_LENDING FOREIGN KEY(BOOK_ID) REFERENCES BOOK(BOOK_ID)ON DELETE CASCADE,
+PRIMARY KEY(BOOK_ID,BRANCH_ID,CARD_NO));
+
+MariaDB [LIBRARY]> DESC BOOK_LENDING;
++-----------+------------+------+-----+---------+-------+
+| Field     | Type       | Null | Key | Default | Extra |
++-----------+------------+------+-----+---------+-------+
+| BOOK_ID   | int(4)     | NO   | PRI | NULL    |       |
+| BRANCH_ID | varchar(5) | NO   | PRI | NULL    |       |
+| CARD_NO   | varchar(4) | NO   | PRI | NULL    |       |
+| DATE_OUT  | date       | YES  |     | NULL    |       |
+| DUE_DATE  | date       | YES  |     | NULL    |       |
++-----------+------------+------+-----+---------+-------+
+
+MariaDB [LIBRARY]> SHOW TABLES;
++-------------------+
+| Tables_in_library |
++-------------------+
+| book              |
+| book_author       |
+| book_copies       |
+| book_lending      |
+| library_branch    |
+| publisher         |
++-------------------+
+
+Inserting Values:
+
+Publisher
+
+MariaDB [LIBRARY]> INSERT INTO PUBLISHER VALUES(1,'ALLEN','NEW DELHI',8127126121);
+MariaDB [LIBRARY]> SELECT * FROM PUBLISHER;
++--------+------------------+-----------+------------+
+| PUB_ID | NAME             | ADDRESS   | PHONE      |
++--------+------------------+-----------+------------+
+|      1 | ALLEN            | NEW DELHI | 8127126121 |
+|      2 | HAMISH HAMILTION | HYDERABAD | 6789256411 |
+|      3 | JOHN WILEY       | BENGALURU | 8789443333 |
+|      4 | McGREW-HILL      | BENGALURU | 6633949991 |
+|      5 | ORIENT BLACKSWAN | KOLKATA   | 7774423301 |
+|      6 | PEARSON          | CHENNAI   | 6128725103 |
+|      7 | WESLEY           | MUMBAI    |  658725793 |
++--------+------------------+-----------+------------+
+
+Book
+
+MariaDB [LIBRARY]> INSERT INTO BOOK VALUES(101,'ADVANCE JAVA & J2EE','McGREW-HILL',2017);
+MariaDB [LIBRARY]> SELECT * FROM BOOK;
++---------+----------------------------+------------------+----------+
+| BOOK_ID | TITLE                      | PUB_NAME         | PUB_YEAR |
++---------+----------------------------+------------------+----------+
+|     101 | ADVANCE JAVA & J2EE        | McGREW-HILL      |     2017 |
+|     102 | AI                         | PEARSON          |     2010 |
+|     103 | COMPUTER NETWORKS          | PEARSON          |     2014 |
+|     104 | COMPUTER GRAPHICS          | PEARSON          |     2012 |
+|     105 | DBMS                       | WESLEY           |     2011 |
+|     106 | OPERATION RESEARCH         | McGREW-HILL      |     2017 |
+|     107 | PYTHON PROGRAMMING         | JOHN-WILEY       |     2015 |
+|     108 | PROGRAMMING THE WORLD WIDE | JOHN-WILEY       |     2008 |
+|     109 | PSP                        | PEARSON          |     2014 |
+|     110 | SOFTWARE DESIGN            | PEARSON          |     2004 |
+|     111 | DIGITAL ELECTRONICS        | McGREW-HILL      |     2016 |
+|     112 | CEEE                       | McGREW-HILL      |     2017 |
+|     113 | THE LORD OF THE RING       | ALLEN            |     1959 |
+|     114 | SWAMI AND FRIENDS          | HAMISH HAMILTON  |     1935 |
+|     115 | MAKING OF MODERN INDIA     | ORIENT BLACKSWAN |     2009 |
++---------+----------------------------+------------------+----------+
+
+Book Author
+
+MariaDB [LIBRARY]> INSERT INTO BOOK_AUTHOR VALUES(101,'E BALAGURUSWAMY');
+MariaDB [LIBRARY]> SELECT * FROM BOOK_AUTHOR;
++---------+-------------------+
+| BOOK_ID | AUTHOR_NAME       |
++---------+-------------------+
+|     101 | E BALAGURUSWAMY   |
+|     102 | SHIVA SHANKAR B   |
+|     103 | ANDREW S          |
+|     104 | DONALD HEARN      |
+|     105 | S SUDARSHAN       |
+|     106 | PREETAM BASU      |
+|     107 | ALLEN B           |
+|     108 | KISHORE S TRIVEDI |
+|     109 | ROBERT W SEBESTA  |
+|     110 | DAVID BUDGEN      |
+|     111 | R P JAIN          |
+|     112 | K D PRASAD        |
+|     113 | J.R.R JOLKIEN     |
+|     114 | R.K NARAYAN       |
+|     115 | BIPIN CHANDRA     |
++---------+-------------------+
+
+Library_Branch
+
+MariaDB [LIBRARY]> INSERT INTO LIBRARY_BRANCH VALUES('ISE01','ISE','ISE SECTION');
+MariaDB [LIBRARY]> SELECT * FROM LIBRARY_BRANCH;
++-----------+-------------+-----------------+
+| BRANCH_ID | BRANCH_NAME | ADDRESS         |
++-----------+-------------+-----------------+
+| CSE01     | CSE         | ISE SECTION     |
+| ECE02     | ECE         | ECE SECTION     |
+| HS04      | HISTORY     | HISTORY SECTION |
+| ISE01     | ISE         | ISE SECTION     |
+| NL03      | NOVELS      | NOVELS SECTION  |
++-----------+-------------+-----------------+
+
+Book Copies
+
+MariaDB [LIBRARY]> INSERT INTO BOOK_COPIES VALUES(101,'CSE01',20);
+MariaDB [LIBRARY]> SELECT * FROM BOOK_COPIES;
++---------+-----------+--------------+
+| BOOK_ID | BRANCH_ID | NO_OF_COPIES |
++---------+-----------+--------------+
+|     101 | CSE01     |           20 |
+|     102 | ISE01     |           15 |
+|     103 | ISE01     |           25 |
+|     104 | CSE01     |           15 |
+|     105 | CSE01     |           30 |
+|     106 | CSE01     |           30 |
+|     107 | CSE01     |           10 |
+|     108 | ISE01     |           15 |
+|     109 | ISE01     |            8 |
+|     110 | ISE01     |            5 |
+|     111 | ECE02     |           10 |
+|     112 | ECE02     |           15 |
+|     113 | NL03      |           10 |
+|     114 | NL03      |           15 |
+|     115 | HS04      |            5 |
++---------+-----------+--------------+
+
+Book Lending
+
+MariaDB [LIBRARY]>  INSERT INTO BOOK_LENDING VALUES(101,'CSE01','401-A','2017-09-05','2017-10-05');
+MariaDB [LIBRARY]> SELECT * FROM BOOK_LENDING;
++---------+-----------+---------+------------+------------+
+| BOOK_ID | BRANCH_ID | CARD_NO | DATE_OUT   | DUE_DATE   |
++---------+-----------+---------+------------+------------+
+|     101 | CSE01     | 401-A   | 2017-09-05 | 2017-10-05 |
+|     101 | CSE01     | 402-B   | 2018-10-10 | 2018-11-10 |
+|     104 | CSE01     | 402-B   | 2018-03-25 | 2018-04-25 |
+|     105 | CSE01     | 403-C   | 2010-01-15 | 2019-02-15 |
+|     105 | CSE01     | 405-E   | 2020-02-15 | 2020-03-15 |
+|     105 | ISE01     | 401-A   | 2019-02-28 | 2019-03-28 |
+|     106 | CSE01     | 404-D   | 2019-02-26 | 2019-03-26 |
+|     107 | ISE01     | 403-C   | 2019-03-10 | 2019-04-10 |
+|     108 | ISE01     | 403-C   | 2019-03-11 | 2019-04-11 |
+|     109 | ISE01     | 402-B   | 2019-04-15 | 2019-05-15 |
+|     112 | ECE02     | 403-C   | 2019-05-05 | 2019-06-05 |
+|     113 | NL03      | 401-A   | 2019-05-10 | 2019-06-10 |
+|     114 | NL03      | 402-B   | 2019-06-11 | 2019-07-11 |
+|     115 | HS04      | 404-D   | 2019-10-11 | 2019-10-11 |
++---------+-----------+---------+------------+------------+
+
+QUERY 1:
+
+select b.book_id,b.title,b.pub_name,a.author_name,c.no_of_copies,d.branch_id
+from book b,book_author a,book_copies c,library_branch d
+where b.book_id=a.book_id and
+b.book_id=c.book_id and
+d.branch_id=c.branch_id;
++---------+----------------------------+------------------+-------------------+--------------+-----------+
+| book_id | title                      | pub_name         | author_name       | no_of_copies | branch_id |
++---------+----------------------------+------------------+-------------------+--------------+-----------+
+|     101 | ADVANCE JAVA & J2EE        | McGREW-HILL      | E BALAGURUSWAMY   |           20 | CSE01     |
+|     104 | COMPUTER GRAPHICS          | PEARSON          | DONALD HEARN      |           15 | CSE01     |
+|     105 | DBMS                       | WESLEY           | S SUDARSHAN       |           30 | CSE01     |
+|     106 | OPERATION RESEARCH         | McGREW-HILL      | PREETAM BASU      |           30 | CSE01     |
+|     107 | PYTHON PROGRAMMING         | JOHN-WILEY       | ALLEN B           |           10 | CSE01     |
+|     111 | DIGITAL ELECTRONICS        | McGREW-HILL      | R P JAIN          |           10 | ECE02     |
+|     112 | CEEE                       | McGREW-HILL      | K D PRASAD        |           15 | ECE02     |
+|     115 | MAKING OF MODERN INDIA     | ORIENT BLACKSWAN | BIPIN CHANDRA     |            5 | HS04      |
+|     102 | AI                         | PEARSON          | SHIVA SHANKAR B   |           15 | ISE01     |
+|     103 | COMPUTER NETWORKS          | PEARSON          | ANDREW S          |           25 | ISE01     |
+|     108 | PROGRAMMING THE WORLD WIDE | JOHN-WILEY       | KISHORE S TRIVEDI |           15 | ISE01     |
+|     109 | PSP                        | PEARSON          | ROBERT W SEBESTA  |            8 | ISE01     |
+|     110 | SOFTWARE DESIGN            | PEARSON          | DAVID BUDGEN      |            5 | ISE01     |
+|     113 | THE LORD OF THE RING       | ALLEN            | J.R.R JOLKIEN     |           10 | NL03      |
+|     114 | SWAMI AND FRIENDS          | HAMISH HAMILTON  | R.K NARAYAN       |           15 | NL03      |
++---------+----------------------------+------------------+-------------------+--------------+-----------+
+
+
+QUERY 2:
+
+select card_no from book_lending
+where date_out between '2019-01-01' and '2019-06-30'
+group by card_no
+having count(*)>3;
++---------+
+| card_no |
++---------+
+| 403-C   |
++---------+
+
+QUERY 4:
+
+create view publication as select
+pub_year
+from book;
+
+query ok,
+
+MariaDB [LIBRARY]> select pub_year from publication
+    -> order by pub_year asc;
++----------+
+| pub_year |
++----------+
+|     1935 |
+|     1959 |
+|     2004 |
+|     2008 |
+|     2009 |
+|     2010 |
+|     2011 |
+|     2012 |
+|     2014 |
+|     2014 |
+|     2015 |
+|     2016 |
+|     2017 |
+|     2017 |
+|     2017 |
++----------+
+
+QUERY 3:
+
+MariaDB [library]> DELETE FROM BOOK WHERE BOOK_ID=102;
+Query OK, 1 row affected (0.01 sec)
+
+MariaDB [library]> SELECT * FROM BOOK;
++---------+----------------------------+------------------+----------+
+| BOOK_ID | TITLE                      | PUB_NAME         | PUB_YEAR |
++---------+----------------------------+------------------+----------+
+|     101 | ADVANCE JAVA & J2EE        | McGREW-HILL      |     2017 |
+|     103 | COMPUTER NETWORKS          | PEARSON          |     2014 |
+|     104 | COMPUTER GRAPHICS          | PEARSON          |     2012 |
+|     105 | DBMS                       | WESLEY           |     2011 |
+|     106 | OPERATION RESEARCH         | McGREW-HILL      |     2017 |
+|     107 | PYTHON PROGRAMMING         | JOHN-WILEY       |     2015 |
+|     108 | PROGRAMMING THE WORLD WIDE | JOHN-WILEY       |     2008 |
+|     109 | PSP                        | PEARSON          |     2014 |
+|     110 | SOFTWARE DESIGN            | PEARSON          |     2004 |
+|     111 | DIGITAL ELECTRONICS        | McGREW-HILL      |     2016 |
+|     112 | CEEE                       | McGREW-HILL      |     2017 |
+|     113 | THE LORD OF THE RING       | ALLEN            |     1959 |
+|     114 | SWAMI AND FRIENDS          | HAMISH HAMILTON  |     1935 |
+|     115 | MAKING OF MODERN INDIA     | ORIENT BLACKSWAN |     2009 |
++---------+----------------------------+------------------+----------+
+14 rows in set (0.00 sec)
+
+MariaDB [library]> SELECT * FROM BOOK_COPIES;
++---------+-----------+--------------+
+| BOOK_ID | BRANCH_ID | NO_OF_COPIES |
++---------+-----------+--------------+
+|     101 | CSE01     |           20 |
+|     102 | ISE01     |           15 |
+|     103 | ISE01     |           25 |
+|     104 | CSE01     |           15 |
+|     105 | CSE01     |           30 |
+|     106 | CSE01     |           30 |
+|     107 | CSE01     |           10 |
+|     108 | ISE01     |           15 |
+|     109 | ISE01     |            8 |
+|     110 | ISE01     |            5 |
+|     111 | ECE02     |           10 |
+|     112 | ECE02     |           15 |
+|     113 | NL03      |           10 |
+|     114 | NL03      |           15 |
+|     115 | HS04      |            5 |
++---------+-----------+--------------+
+15 rows in set (0.01 sec)
+
+MariaDB [library]> SELECT * FROM BOOK_AUTHOR;
++---------+-------------------+
+| BOOK_ID | AUTHOR_NAME       |
++---------+-------------------+
+|     101 | E BALAGURUSWAMY   |
+|     103 | ANDREW S          |
+|     104 | DONALD HEARN      |
+|     105 | S SUDARSHAN       |
+|     106 | PREETAM BASU      |
+|     107 | ALLEN B           |
+|     108 | KISHORE S TRIVEDI |
+|     109 | ROBERT W SEBESTA  |
+|     110 | DAVID BUDGEN      |
+|     111 | R P JAIN          |
+|     112 | K D PRASAD        |
+|     113 | J.R.R JOLKIEN     |
+|     114 | R.K NARAYAN       |
+|     115 | BIPIN CHANDRA     |
++---------+-------------------+
+14 rows in set (0.00 sec)
+
+MariaDB [library]> SELECT * FROM BOOK_COPIES;
++---------+-----------+--------------+
+| BOOK_ID | BRANCH_ID | NO_OF_COPIES |
++---------+-----------+--------------+
+|     101 | CSE01     |           20 |
+|     102 | ISE01     |           15 |
+|     103 | ISE01     |           25 |
+|     104 | CSE01     |           15 |
+|     105 | CSE01     |           30 |
+|     106 | CSE01     |           30 |
+|     107 | CSE01     |           10 |
+|     108 | ISE01     |           15 |
+|     109 | ISE01     |            8 |
+|     110 | ISE01     |            5 |
+|     111 | ECE02     |           10 |
+|     112 | ECE02     |           15 |
+|     113 | NL03      |           10 |
+|     114 | NL03      |           15 |
+|     115 | HS04      |            5 |
++---------+-----------+--------------+
+15 rows in set (0.00 sec)
+
+MariaDB [library]> SELECT * FROM BOOK_LENDING;
++---------+-----------+---------+------------+------------+
+| BOOK_ID | BRANCH_ID | CARD_NO | DATE_OUT   | DUE_DATE   |
++---------+-----------+---------+------------+------------+
+|     101 | CSE01     | 401-A   | 2017-09-05 | 2017-10-05 |
+|     101 | CSE01     | 402-B   | 2018-10-10 | 2018-11-10 |
+|     104 | CSE01     | 402-B   | 2018-03-25 | 2018-04-25 |
+|     105 | CSE01     | 403-C   | 2019-01-15 | 2019-02-15 |
+|     105 | CSE01     | 405-E   | 2020-02-15 | 2020-03-15 |
+|     105 | ISE01     | 401-A   | 2019-02-28 | 2019-03-28 |
+|     106 | CSE01     | 404-D   | 2019-02-26 | 2019-03-26 |
+|     107 | ISE01     | 403-C   | 2019-03-10 | 2019-04-10 |
+|     108 | ISE01     | 403-C   | 2019-03-11 | 2019-04-11 |
+|     109 | ISE01     | 402-B   | 2019-04-15 | 2019-05-15 |
+|     112 | ECE02     | 403-C   | 2019-05-05 | 2019-06-05 |
+|     113 | NL03      | 401-A   | 2019-05-10 | 2019-06-10 |
+|     114 | NL03      | 403-C   | 2019-06-11 | 2019-07-11 |
+|     115 | HS04      | 404-D   | 2019-10-11 | 2019-10-11 |
++---------+-----------+---------+------------+------------+
+14 rows in set (0.00 sec)
+
+QUERY 5:
+
+CREATE VIEW CURRENT_BOOKS
+AS SELECT B.TITLE,L.BRANCH_NAME,C.CURRENT_BOOK 
+FROM BOOK B
+JOIN
+(
+	SELECT C.BOOK_ID,C.BRANCH_ID,C.NO_OF_COPIES - G.NO_OF_BOOK_LENT  
+	AS CURRENT_BOOK 
+	FROM  BOOK_COPIES C
+	JOIN
+	(	
+		SELECT L.BRANCH_ID,BOOK_ID,COUNT(*)  
+		AS NO_OF_BOOK_LENT FROM BOOK_LENDING L
+		GROUP BY L.BRANCH_ID,L.BOOK_ID
+	)AS G ON C.BOOK_ID=G.BOOK_ID AND C.BRANCH_ID=G.BRANCH_ID
+	UNION
+	(
+	SELECT B.BOOK_ID,B.BRANCH_ID,NO_OF_COPIES 
+	FROM BOOK_COPIES B
+	WHERE B.BOOK_ID NOT IN (SELECT DISTINCT BOOK_ID FROM BOOK_LENDING)
+	)
+)AS C ON B.BOOK_ID=C.BOOK_ID JOIN LIBRARY_BRANCH L ON L.BRANCH_ID=C.BRANCH_ID
+;
+
+
+
+
+CREATE VIEW V_BOOKS AS
+    SELECT B.BOOK_ID,B.TITLE,C.NO_OF_COPIES
+    FROM BOOK B,BOOK_COPIES C,LIBRARY_BRANCH L
+    WHERE B.BOOK_ID=C.BOOK_ID
+    AND C.BRANCH_ID=L.BRANCH_ID;
+
+Query OK, 0 rows affected (0.03 sec)
+
+MariaDB [LIBRARY]> SELECT * FROM V_BOOKS;
++---------+----------------------------+--------------+
+| BOOK_ID | TITLE                      | NO_OF_COPIES |
++---------+----------------------------+--------------+
+|     101 | ADVANCE JAVA & J2EE        |           20 |
+|     104 | COMPUTER GRAPHICS          |           15 |
+|     105 | DBMS                       |           30 |
+|     106 | OPERATION RESEARCH         |           30 |
+|     107 | PYTHON PROGRAMMING         |           10 |
+|     111 | DIGITAL ELECTRONICS        |           10 |
+|     112 | CEEE                       |           15 |
+|     115 | MAKING OF MODERN INDIA     |            5 |
+|     102 | AI                         |           15 |
+|     103 | COMPUTER NETWORKS          |           25 |
+|     108 | PROGRAMMING THE WORLD WIDE |           15 |
+|     109 | PSP                        |            8 |
+|     110 | SOFTWARE DESIGN            |            5 |
+|     113 | THE LORD OF THE RING       |           10 |
+|     114 | SWAMI AND FRIENDS          |           15 |
++---------+----------------------------+--------------+
+
+
+
+
+
+
+
+

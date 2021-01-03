@@ -1,0 +1,544 @@
+**COLLEGE DATABASE**
+
+
+Setting environment for using XAMPP for Windows.
+
+mysql -u root -p -h 127.0.0.1
+Enter password:
+Welcome to the MariaDB monitor.  Commands end with ; or \g.
+Your MariaDB connection id is 3
+Server version: 10.1.38-MariaDB mariadb.org binary distribution
+
+Copyright (c) 2000, 2018, Oracle, MariaDB Corporation Ab and others.
+
+Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
+
+
+creating and using database(schema)
+
+MariaDB [(none)]> CREATE DATABASE COLLEGE;
+Query OK, 1 row affected (0.01 sec)
+
+MariaDB [(none)]> show databases;
++--------------------+
+| Database           |
++--------------------+
+| college            |
+| company            |
+| examples           |
+| information_schema |
+| library            |
+| movies             |
+| mysql              |
+| performance_schema |
+| phpmyadmin         |
+| sales_order        |
+| test               |
++--------------------+
+11 rows in set (0.01 sec)
+
+MariaDB [(none)]> USE COLLEGE
+Database changed
+
+Creating Tables:
+
+STUDENT
+
+CREATE TABLE STUDENT( 
+	USN VARCHAR(10),
+	SNAME VARCHAR(25) NOT NULL,
+	ADDRESS VARCHAR(30),
+	PHONE BIGINT(10) NOT NULL,
+	GENDER CHAR(1),
+	PRIMARY KEY(USN)
+);
+Query OK, 0 rows affected (0.02 sec)
+
+MariaDB [COLLEGE]> DESC STUDENT;
++---------+-------------+------+-----+---------+-------+
+| Field   | Type        | Null | Key | Default | Extra |
++---------+-------------+------+-----+---------+-------+
+| USN     | varchar(10) | NO   | PRI | NULL    |       |
+| SNAME   | varchar(25) | NO   |     | NULL    |       |
+| ADDRESS | varchar(30) | YES  |     | NULL    |       |
+| PHONE   | bigint(10)  | NO   |     | NULL    |       |
+| GENDER  | char(1)     | YES  |     | NULL    |       |
++---------+-------------+------+-----+---------+-------+
+5 rows in set (0.01 sec)
+
+SEMSEC
+
+CREATE TABLE SEMSEC( 
+	SSID VARCHAR(9) PRIMARY KEY,
+	SEM INT(1) NOT NULL,
+	SEC CHAR(1) NOT NULL
+);
+Query OK, 0 rows affected (0.31 sec)
+
+MariaDB [COLLEGE]> DESC SEMSEC;
++-------+------------+------+-----+---------+-------+
+| Field | Type       | Null | Key | Default | Extra |
++-------+------------+------+-----+---------+-------+
+| SSID  | varchar(9) | NO   | PRI | NULL    |       |
+| SEM   | int(1)     | NO   |     | NULL    |       |
+| SEC   | char(1)    | NO   |     | NULL    |       |
++-------+------------+------+-----+---------+-------+
+3 rows in set (0.01 sec)
+
+CLASS
+
+CREATE TABLE CLASS ( 
+	USN VARCHAR(10),
+	SSID VARCHAR(9),
+	CONSTRAINT FK FOREIGN KEY(USN) REFERENCES STUDENT(USN) ON DELETE CASCADE,
+       	CONSTRAINT FKS FOREIGN KEY(SSID) REFERENCES SEMSEC(SSID) ON DELETE CASCADE,
+	PRIMARY KEY(USN,SSID)
+);
+Query OK, 0 rows affected (0.02 sec)
+
+MariaDB [COLLEGE]> DESC CLASS;
++-------+-------------+------+-----+---------+-------+
+| Field | Type        | Null | Key | Default | Extra |
++-------+-------------+------+-----+---------+-------+
+| USN   | varchar(10) | NO   | PRI | NULL    |       |
+| SSID  | varchar(9)  | NO   | PRI | NULL    |       |
++-------+-------------+------+-----+---------+-------+
+2 rows in set (0.01 sec)
+
+SUBJECT
+
+CREATE TABLE SUBJECT( 
+	SUBCODE VARCHAR(20) PRIMARY KEY,
+	TITLE VARCHAR(20) NOT NULL,
+	SEM INT(1),
+	CREDITS INT(1) NOT NULL
+);
+Query OK, 0 rows affected (0.02 sec)
+
+MariaDB [COLLEGE]> DESC SUBJECT;
++---------+-------------+------+-----+---------+-------+
+| Field   | Type        | Null | Key | Default | Extra |
++---------+-------------+------+-----+---------+-------+
+| SUBCODE | varchar(20) | NO   | PRI | NULL    |       |
+| TITLE   | varchar(20) | NO   |     | NULL    |       |
+| SEM     | int(1)      | YES  |     | NULL    |       |
+| CREDITS | int(1)      | NO   |     | NULL    |       |
++---------+-------------+------+-----+---------+-------+
+4 rows in set (0.01 sec)
+
+IA-MARKS
+
+CREATE TABLE IA_MARKS( 
+	USN VARCHAR(10),
+	SUBCODE VARCHAR(20),
+	SSID VARCHAR(9),
+	TEST1 INT(2),
+	TEST2 INT(2),
+	TEST3 INT(2),
+	FINALIA INT(2),
+	CONSTRAINT FKU FOREIGN KEY(USN) REFERENCES STUDENT(USN)ON DELETE CASCADE,
+	CONSTRAINT FKSC FOREIGN KEY(SUBCODE) REFERENCES SUBJECT(SUBCODE) ON DELETE CASCADE,
+	CONSTRAINT FKSS FOREIGN KEY (SSID) REFERENCES SEMSEC(SSID) ON DELETE CASCADE, 
+	PRIMARY KEY(USN,SUBCODE,SSID)
+);
+Query OK, 0 rows affected (0.02 sec)
+
+MariaDB [COLLEGE]> DESC IA_MARKS;
++---------+-------------+------+-----+---------+-------+
+| Field   | Type        | Null | Key | Default | Extra |
++---------+-------------+------+-----+---------+-------+
+| USN     | varchar(10) | NO   | PRI | NULL    |       |
+| SUBCODE | varchar(20) | NO   | PRI | NULL    |       |
+| SSID    | varchar(9)  | NO   | PRI | NULL    |       |
+| TEST1   | int(2)      | YES  |     | NULL    |       |
+| TEST2   | int(2)      | YES  |     | NULL    |       |
+| TEST3   | int(2)      | YES  |     | NULL    |       |
+| FINALIA | int(2)      | YES  |     | NULL    |       |
++---------+-------------+------+-----+---------+-------+
+7 rows in set (0.01 sec)
+
+MariaDB [COLLEGE]> SHOW TABLES;
++-------------------+
+| Tables_in_college |
++-------------------+
+| class             |
+| ia_marks          |
+| semsec            |
+| student           |
+| subject           |
++-------------------+
+5 rows in set (0.00 sec)
+
+INSERTING VALUES:-
+
+STUDENT
+
+MariaDB [COLLEGE]> INSERT INTO STUDENT VALUES('11XX1501','ANIL','YADGIR',9160732101,'M');
+
+MariaDB [COLLEGE]> SELECT * FROM STUDENT;
++----------+------------+-----------+------------+--------+
+| USN      | SNAME      | ADDRESS   | PHONE      | GENDER |
++----------+------------+-----------+------------+--------+
+| 11XX1201 | ARUN       | TUMKAR    | 9036955662 | M      |
+| 11XX1205 | NIKHIL     | BENGALURU | 9096356652 | M      |
+| 11XX1210 | PAVAN      | MANGALURU | 9063966552 | M      |
+| 11XX1215 | RAKSHITH   | HASSAN    | 9093625566 | M      |
+| 11XX1228 | SUSHMITHA  | BENGALURU | 7259144941 | F      |
+| 11XX1232 | SWARNA     | KALBURGI  | 7259254941 | F      |
+| 11XX1234 | VIVEK      | BENGALURU | 7259244591 | M      |
+| 11XX1302 | AADHYA     | UDUPI     | 8512394421 | F      |
+| 11XX1306 | CHARAN     | BENGALURU | 9845954123 | M      |
+| 11XX1311 | ADITI      | MYSORE    | 7984763102 | F      |
+| 11XX1319 | RAVI       | BENGALURU | 9090232201 | M      |
+| 11XX1329 | ARJUN      | DAVANGERE | 9763108540 | M      |
+| 11XX1331 | RAJESH     | SHIMOGA   | 9458866312 | M      |
+| 11XX1403 | ANIRUDDH   | MYSORE    | 8088217690 | M      |
+| 11XX1407 | SUSHMA     | BENGALURU | 9845601331 | F      |
+| 11XX1412 | PREETHI    | BENGALURU | 9764108239 | F      |
+| 11XX1420 | RAJU       | KOPPAL    | 9549652980 | M      |
+| 11XX1425 | GOKUL      | MYSORE    | 8901763450 | M      |
+| 11XX1430 | GURU KIRAN | BENGALURU | 9060702101 | M      |
+| 11XX1501 | ANIL       | YADGIR    | 9160732101 | M      |
+| 11XX1509 | BHAVANI    | MANGALURU | 9814325523 | F      |
+| 11XX1513 | CHIRAG     | BENGALURU | 9537062103 | M      |
+| 11XX1519 | DARSHAN    | MYSORE    | 8988761342 | M      |
+| 11XX1522 | DIVYA      | MADIKERI  | 9630852170 | F      |
+| 11XX1525 | RAKSHA     | BENGALURU | 9108961204 | F      |
++----------+------------+-----------+------------+--------+
+25 rows in set (0.00 sec)
+
+SEMSEC:
+
+MariaDB [COLLEGE]> INSERT INTO SEMSEC VALUES ('ISE1501',2,'A');
+
+MariaDB [COLLEGE]> SELECT * FROM SEMSEC;
++---------+-----+-----+
+| SSID    | SEM | SEC |
++---------+-----+-----+
+| ISE1201 |   8 | A   |
+| ISE1202 |   8 | A   |
+| ISE1203 |   8 | A   |
+| ISE1204 |   8 | B   |
+| ISE1205 |   8 | B   |
+| ISE1206 |   8 | C   |
+| ISE1207 |   8 | C   |
+| ISE1301 |   6 | A   |
+| ISE1302 |   6 | B   |
+| ISE1303 |   6 | C   |
+| ISE1304 |   6 | A   |
+| ISE1305 |   6 | B   |
+| ISE1306 |   6 | C   |
+| ISE1401 |   4 | A   |
+| ISE1402 |   4 | A   |
+| ISE1403 |   4 | B   |
+| ISE1404 |   4 | B   |
+| ISE1405 |   4 | C   |
+| ISE1406 |   4 | C   |
+| ISE1501 |   2 | A   |
+| ISE1502 |   2 | A   |
+| ISE1503 |   2 | B   |
+| ISE1504 |   2 | B   |
+| ISE1505 |   2 | C   |
+| ISE1506 |   2 | C   |
++---------+-----+-----+
+25 rows in set (0.00 sec)
+
+CLASS:
+
+MariaDB [COLLEGE]> INSERT INTO CLASS VALUES('11XX1501','ISE1501');
+
+MariaDB [COLLEGE]> SELECT * FROM CLASS;
++----------+---------+
+| USN      | SSID    |
++----------+---------+
+| 11XX1201 | ISE1201 |
+| 11XX1205 | ISE1202 |
+| 11XX1210 | ISE1203 |
+| 11XX1215 | ISE1204 |
+| 11XX1228 | ISE1205 |
+| 11XX1232 | ISE1206 |
+| 11XX1234 | ISE1207 |
+| 11XX1302 | ISE1301 |
+| 11XX1306 | ISE1302 |
+| 11XX1311 | ISE1303 |
+| 11XX1319 | ISE1304 |
+| 11XX1329 | ISE1305 |
+| 11XX1331 | ISE1306 |
+| 11XX1403 | ISE1401 |
+| 11XX1407 | ISE1402 |
+| 11XX1412 | ISE1403 |
+| 11XX1420 | ISE1404 |
+| 11XX1425 | ISE1405 |
+| 11XX1430 | ISE1406 |
+| 11XX1501 | ISE1501 |
+| 11XX1509 | ISE1502 |
+| 11XX1513 | ISE1503 |
+| 11XX1519 | ISE1504 |
+| 11XX1522 | ISE1505 |
+| 11XX1525 | ISE1506 |
++----------+---------+
+25 rows in set (0.00 sec)
+
+SUBJECT:-
+
+MariaDB [COLLEGE]> INSERT INTO SUBJECT VALUES('12BSEM201','M-2',2,3);
+
+MariaDB [COLLEGE]> SELECT * FROM SUBJECT;
++-----------+--------------+------+---------+
+| SUBCODE   | TITLE        | SEM  | CREDITS |
++-----------+--------------+------+---------+
+| 12BSCH110 | ECH          |    2 |       3 |
+| 12BSEM201 | M-2          |    2 |       3 |
+| 12BSEM401 | M-4          |    4 |       3 |
+| 12CIIN805 | INTERNSHIP   |    8 |       3 |
+| 12CIPC402 | FAFL         |    4 |       4 |
+| 12CIPC403 | DAA          |    4 |       3 |
+| 12CIPC404 | MP & MC      |    4 |       3 |
+| 12CIPC405 | OS           |    4 |       3 |
+| 12CIPC406 | SE           |    4 |       4 |
+| 12CIPC601 | CD           |    6 |       4 |
+| 12CIPC602 | DC           |    6 |       4 |
+| 12CIPC603 | UNIX S P     |    6 |       4 |
+| 12CIPC801 | DS           |    8 |       3 |
+| 12CIPC804 | PROJECT WORK |    8 |       9 |
+| 12CIPE62C | WN           |    6 |       3 |
+| 12CIPE63B | CNS          |    6 |       3 |
+| 12CIPE86B | GC           |    8 |       3 |
+| 12CIPO61A | SC           |    6 |       3 |
+| 12ESCS114 | CP           |    2 |       3 |
+| 12ESCV113 | EMH          |    2 |       3 |
+| 12ESME112 | EGD          |    2 |       4 |
+| 12MCCE409 | CIPE         |    4 |       1 |
+| 12MCIP803 | IPR          |    8 |       1 |
+| 12MCKN116 | KANNADA      |    2 |       1 |
++-----------+--------------+------+---------+
+24 rows in set (0.00 sec)
+
+
+IA_MARKS:
+
+MariaDB [COLLEGE]> INSERT INTO IA_MARKS(USN,SUBCODE,SSID,TEST1,TEST2,TEST3) VALUES('11XX1201','12CIPC801','ISE1201',20,19,17);
+
+MariaDB [COLLEGE]> SELECT * FROM IA_MARKS;
++----------+-----------+---------+-------+-------+-------+---------+
+| USN      | SUBCODE   | SSID    | TEST1 | TEST2 | TEST3 | FINALIA |
++----------+-----------+---------+-------+-------+-------+---------+
+| 11XX1201 | 12CIIN805 | ISE1201 |    19 |    20 |    18 |    NULL |
+| 11XX1201 | 12CIPC801 | ISE1201 |    20 |    19 |    17 |    NULL |
+| 11XX1201 | 12CIPC804 | ISE1201 |    18 |    16 |    18 |    NULL |
+| 11XX1201 | 12CIPE86B | ISE1201 |    15 |    18 |    19 |    NULL |
+| 11XX1201 | 12MCIP803 | ISE1201 |    16 |    14 |    15 |    NULL |
+| 11XX1205 | 12CIIN805 | ISE1202 |    19 |    18 |    20 |    NULL |
+| 11XX1205 | 12CIPC801 | ISE1202 |    20 |    19 |    19 |    NULL |
+| 11XX1205 | 12CIPC804 | ISE1202 |    19 |    19 |    20 |    NULL |
+| 11XX1205 | 12CIPE86B | ISE1202 |    14 |    16 |    19 |    NULL |
+| 11XX1205 | 12MCIP803 | ISE1202 |    17 |    15 |    14 |    NULL |
+| 11XX1210 | 12CIIN805 | ISE1203 |    18 |    19 |    20 |    NULL |
+| 11XX1210 | 12CIPC801 | ISE1203 |    19 |    18 |    15 |    NULL |
+| 11XX1210 | 12CIPC804 | ISE1203 |    18 |    19 |    20 |    NULL |
+| 11XX1210 | 12CIPE86B | ISE1203 |    13 |    12 |    18 |    NULL |
+| 11XX1210 | 12MCIP803 | ISE1203 |    18 |    15 |    13 |    NULL |
+| 11XX1215 | 12CIIN805 | ISE1204 |    18 |    17 |    19 |    NULL |
+| 11XX1215 | 12CIPC801 | ISE1204 |    14 |    15 |    19 |    NULL |
+| 11XX1215 | 12CIPC804 | ISE1204 |    18 |    17 |    20 |    NULL |
+| 11XX1215 | 12CIPE86B | ISE1204 |    20 |    18 |    19 |    NULL |
+| 11XX1215 | 12MCIP803 | ISE1204 |    17 |    15 |    14 |    NULL |
+| 11XX1228 | 12CIIN805 | ISE1205 |    20 |    19 |    18 |    NULL |
+| 11XX1228 | 12CIPC801 | ISE1205 |    19 |    19 |    19 |    NULL |
+| 11XX1228 | 12CIPC804 | ISE1205 |    20 |    18 |    19 |    NULL |
+| 11XX1228 | 12CIPE86B | ISE1205 |    20 |    19 |    20 |    NULL |
+| 11XX1228 | 12MCIP803 | ISE1205 |    18 |    15 |    19 |    NULL |
+| 11XX1232 | 12CIIN805 | ISE1206 |    20 |    18 |    19 |    NULL |
+| 11XX1232 | 12CIPC801 | ISE1206 |    13 |    14 |    20 |    NULL |
+| 11XX1232 | 12CIPC804 | ISE1206 |    19 |    20 |    18 |    NULL |
+| 11XX1232 | 12CIPE86B | ISE1206 |    18 |    20 |    16 |    NULL |
+| 11XX1232 | 12MCIP803 | ISE1206 |    20 |    17 |    15 |    NULL |
+| 11XX1234 | 12CIIN805 | ISE1207 |    19 |    20 |    20 |    NULL |
+| 11XX1234 | 12CIPC801 | ISE1207 |    18 |    16 |    17 |    NULL |
+| 11XX1234 | 12CIPC804 | ISE1207 |    20 |    19 |    20 |    NULL |
+| 11XX1234 | 12CIPE86B | ISE1207 |    14 |    18 |    16 |    NULL |
+| 11XX1234 | 12MCIP803 | ISE1207 |    20 |    18 |    19 |    NULL |
+| 11XX1302 | 12CIPC601 | ISE1301 |    20 |    19 |    19 |    NULL |
+| 11XX1302 | 12CIPC602 | ISE1301 |    18 |    16 |    17 |    NULL |
+| 11XX1302 | 12CIPC603 | ISE1301 |    19 |    20 |    16 |    NULL |
+| 11XX1302 | 12CIPE62C | ISE1301 |    15 |    13 |    14 |    NULL |
+| 11XX1302 | 12CIPE63B | ISE1301 |    17 |    18 |    20 |    NULL |
+| 11XX1302 | 12CIPO61A | ISE1301 |    20 |    16 |    18 |    NULL |
++----------+-----------+---------+-------+-------+-------+---------+
+41 rows in set (0.00 sec)
+
+
+QUERIES:-
+
+QUERY 1
+
+SELECT S.*,SS.SEM,SS.SEC 
+FROM STUDENT S,SEMSEC SS,CLASS C 
+WHERE S.USN=C.USN AND SS.SSID=C.SSID AND SS.SEM=4 AND SS.SEC='C';
+
++----------+------------+-----------+------------+--------+-----+-----+
+| USN      | SNAME      | ADDRESS   | PHONE      | GENDER | SEM | SEC |
++----------+------------+-----------+------------+--------+-----+-----+
+| 11XX1425 | GOKUL      | MYSORE    | 8901763450 | M      |   4 | C   |
+| 11XX1430 | GURU KIRAN | BENGALURU | 9060702101 | M      |   4 | C   |
++----------+------------+-----------+------------+--------+-----+-----+
+2 rows in set (0.01 sec)
+
+QUERY 2
+
+SELECT SS.SEM,SS.SEC,S.GENDER,COUNT(S.GENDER) AS COUNT 
+FROM STUDENT S,SEMSEC SS,CLASS C 
+WHERE S.USN=C.USN AND SS.SSID=C.SSID
+ GROUP BY SS.SEM,SS.SEC,S.GENDER ORDER BY SEM;
+
++-----+-----+--------+-------+
+| SEM | SEC | GENDER | COUNT |
++-----+-----+--------+-------+
+|   2 | A   | F      |     1 |
+|   2 | A   | M      |     1 |
+|   2 | B   | M      |     2 |
+|   2 | C   | F      |     2 |
+|   4 | A   | F      |     1 |
+|   4 | A   | M      |     1 |
+|   4 | B   | F      |     1 |
+|   4 | B   | M      |     1 |
+|   4 | C   | M      |     2 |
+|   6 | A   | F      |     1 |
+|   6 | A   | M      |     1 |
+|   6 | B   | M      |     2 |
+|   6 | C   | F      |     1 |
+|   6 | C   | M      |     1 |
+|   8 | A   | M      |     3 |
+|   8 | B   | F      |     1 |
+|   8 | B   | M      |     1 |
+|   8 | C   | F      |     1 |
+|   8 | C   | M      |     1 |
++-----+-----+--------+-------+
+19 rows in set (0.01 sec)
+
+QUERY 3
+
+CREATE VIEW TEST1_MARKS AS SELECT TEST1,SUBCODE FROM IA_MARKS WHERE USN='11XX1234';
+
+QUERY OK
+
+MariaDB [COLLEGE]> SELECT * FROM TEST1_MARKS;
++-------+-----------+
+| TEST1 | SUBCODE   |
++-------+-----------+
+|    19 | 12CIIN805 |
+|    18 | 12CIPC801 |
+|    20 | 12CIPC804 |
+|    14 | 12CIPE86B |
+|    20 | 12MCIP803 |
++-------+-----------+
+5 rows in set (0.01 sec)
+
+
+QUERY 4
+
+UPDATE IA_MARKS SET FINALIA=(TEST1+TEST2+TEST3-LEAST(TEST1,TEST2,TEST3))/2;
+
+QUERY OK
+
+MariaDB [COLLEGE]> SELECT * FROM IA_MARKS;
++----------+-----------+---------+-------+-------+-------+---------+
+| USN      | SUBCODE   | SSID    | TEST1 | TEST2 | TEST3 | FINALIA |
++----------+-----------+---------+-------+-------+-------+---------+
+| 11XX1201 | 12CIIN805 | ISE1201 |    19 |    20 |    18 |      20 |
+| 11XX1201 | 12CIPC801 | ISE1201 |    20 |    19 |    17 |      20 |
+| 11XX1201 | 12CIPC804 | ISE1201 |    18 |    16 |    18 |      18 |
+| 11XX1201 | 12CIPE86B | ISE1201 |    15 |    18 |    19 |      19 |
+| 11XX1201 | 12MCIP803 | ISE1201 |    16 |    14 |    15 |      16 |
+| 11XX1205 | 12CIIN805 | ISE1202 |    19 |    18 |    20 |      20 |
+| 11XX1205 | 12CIPC801 | ISE1202 |    20 |    19 |    19 |      20 |
+| 11XX1205 | 12CIPC804 | ISE1202 |    19 |    19 |    20 |      20 |
+| 11XX1205 | 12CIPE86B | ISE1202 |    14 |    16 |    19 |      18 |
+| 11XX1205 | 12MCIP803 | ISE1202 |    17 |    15 |    14 |      16 |
+| 11XX1210 | 12CIIN805 | ISE1203 |    18 |    19 |    20 |      20 |
+| 11XX1210 | 12CIPC801 | ISE1203 |    19 |    18 |    15 |      19 |
+| 11XX1210 | 12CIPC804 | ISE1203 |    18 |    19 |    20 |      20 |
+| 11XX1210 | 12CIPE86B | ISE1203 |    13 |    12 |    18 |      16 |
+| 11XX1210 | 12MCIP803 | ISE1203 |    18 |    15 |    13 |      17 |
+| 11XX1215 | 12CIIN805 | ISE1204 |    18 |    17 |    19 |      19 |
+| 11XX1215 | 12CIPC801 | ISE1204 |    14 |    15 |    19 |      17 |
+| 11XX1215 | 12CIPC804 | ISE1204 |    18 |    17 |    20 |      19 |
+| 11XX1215 | 12CIPE86B | ISE1204 |    20 |    18 |    19 |      20 |
+| 11XX1215 | 12MCIP803 | ISE1204 |    17 |    15 |    14 |      16 |
+| 11XX1228 | 12CIIN805 | ISE1205 |    20 |    19 |    18 |      20 |
+| 11XX1228 | 12CIPC801 | ISE1205 |    19 |    19 |    19 |      19 |
+| 11XX1228 | 12CIPC804 | ISE1205 |    20 |    18 |    19 |      20 |
+| 11XX1228 | 12CIPE86B | ISE1205 |    20 |    19 |    20 |      20 |
+| 11XX1228 | 12MCIP803 | ISE1205 |    18 |    15 |    19 |      19 |
+| 11XX1232 | 12CIIN805 | ISE1206 |    20 |    18 |    19 |      20 |
+| 11XX1232 | 12CIPC801 | ISE1206 |    13 |    14 |    20 |      17 |
+| 11XX1232 | 12CIPC804 | ISE1206 |    19 |    20 |    18 |      20 |
+| 11XX1232 | 12CIPE86B | ISE1206 |    18 |    20 |    16 |      19 |
+| 11XX1232 | 12MCIP803 | ISE1206 |    20 |    17 |    15 |      19 |
+| 11XX1234 | 12CIIN805 | ISE1207 |    19 |    20 |    20 |      20 |
+| 11XX1234 | 12CIPC801 | ISE1207 |    18 |    16 |    17 |      18 |
+| 11XX1234 | 12CIPC804 | ISE1207 |    20 |    19 |    20 |      20 |
+| 11XX1234 | 12CIPE86B | ISE1207 |    14 |    18 |    16 |      17 |
+| 11XX1234 | 12MCIP803 | ISE1207 |    20 |    18 |    19 |      20 |
+| 11XX1302 | 12CIPC601 | ISE1301 |    20 |    19 |    19 |      20 |
+| 11XX1302 | 12CIPC602 | ISE1301 |    18 |    16 |    17 |      18 |
+| 11XX1302 | 12CIPC603 | ISE1301 |    19 |    20 |    16 |      20 |
+| 11XX1302 | 12CIPE62C | ISE1301 |    15 |    13 |    14 |      15 |
+| 11XX1302 | 12CIPE63B | ISE1301 |    17 |    18 |    20 |      19 |
+| 11XX1302 | 12CIPO61A | ISE1301 |    20 |    16 |    18 |      19 |
++----------+-----------+---------+-------+-------+-------+---------+
+41 rows in set (0.00 sec)
+
+QUERY 5
+
+SELECT S.USN,S.SNAME,SS.SEM,SS.SEC,IA.TEST1,IA.TEST2,IA.TEST3,IA.FINALIA,
+(CASE
+       WHEN IA.FINALIA BETWEEN 17 AND 20 THEN'OUTSTANDING' 
+       WHEN IA.FINALIA BETWEEN 12 AND 16 THEN 'AVERAGE' 
+       ELSE 'WEAK'
+END) AS CAT
+FROM STUDENT S, SEMSEC SS, IA_MARKS IA
+WHERE S.USN = IA.USN AND
+SS.SSID = IA.SSID AND
+SS.SEM = 8 AND SS.SEC IN ('A','B','C');
+
++----------+-----------+-----+-----+-------+-------+-------+---------+-------------+
+| USN      | SNAME     | SEM | SEC | TEST1 | TEST2 | TEST3 | FINALIA | CAT         |
++----------+-----------+-----+-----+-------+-------+-------+---------+-------------+
+| 11XX1201 | ARUN      |   8 | A   |    19 |    20 |    18 |      20 | OUTSTANDING |
+| 11XX1201 | ARUN      |   8 | A   |    20 |    19 |    17 |      20 | OUTSTANDING |
+| 11XX1201 | ARUN      |   8 | A   |    18 |    16 |    18 |      18 | OUTSTANDING |
+| 11XX1201 | ARUN      |   8 | A   |    15 |    18 |    19 |      19 | OUTSTANDING |
+| 11XX1201 | ARUN      |   8 | A   |    16 |    14 |    15 |      16 | AVERAGE     |
+| 11XX1205 | NIKHIL    |   8 | A   |    19 |    18 |    20 |      20 | OUTSTANDING |
+| 11XX1205 | NIKHIL    |   8 | A   |    20 |    19 |    19 |      20 | OUTSTANDING |
+| 11XX1205 | NIKHIL    |   8 | A   |    19 |    19 |    20 |      20 | OUTSTANDING |
+| 11XX1205 | NIKHIL    |   8 | A   |    14 |    16 |    19 |      18 | OUTSTANDING |
+| 11XX1205 | NIKHIL    |   8 | A   |    17 |    15 |    14 |      16 | AVERAGE     |
+| 11XX1210 | PAVAN     |   8 | A   |    18 |    19 |    20 |      20 | OUTSTANDING |
+| 11XX1210 | PAVAN     |   8 | A   |    19 |    18 |    15 |      19 | OUTSTANDING |
+| 11XX1210 | PAVAN     |   8 | A   |    18 |    19 |    20 |      20 | OUTSTANDING |
+| 11XX1210 | PAVAN     |   8 | A   |    13 |    12 |    18 |      16 | AVERAGE     |
+| 11XX1210 | PAVAN     |   8 | A   |    18 |    15 |    13 |      17 | OUTSTANDING |
+| 11XX1215 | RAKSHITH  |   8 | B   |    18 |    17 |    19 |      19 | OUTSTANDING |
+| 11XX1215 | RAKSHITH  |   8 | B   |    14 |    15 |    19 |      17 | OUTSTANDING |
+| 11XX1215 | RAKSHITH  |   8 | B   |    18 |    17 |    20 |      19 | OUTSTANDING |
+| 11XX1215 | RAKSHITH  |   8 | B   |    20 |    18 |    19 |      20 | OUTSTANDING |
+| 11XX1215 | RAKSHITH  |   8 | B   |    17 |    15 |    14 |      16 | AVERAGE     |
+| 11XX1228 | SUSHMITHA |   8 | B   |    20 |    19 |    18 |      20 | OUTSTANDING |
+| 11XX1228 | SUSHMITHA |   8 | B   |    19 |    19 |    19 |      19 | OUTSTANDING |
+| 11XX1228 | SUSHMITHA |   8 | B   |    20 |    18 |    19 |      20 | OUTSTANDING |
+| 11XX1228 | SUSHMITHA |   8 | B   |    20 |    19 |    20 |      20 | OUTSTANDING |
+| 11XX1228 | SUSHMITHA |   8 | B   |    18 |    15 |    19 |      19 | OUTSTANDING |
+| 11XX1232 | SWARNA    |   8 | C   |    20 |    18 |    19 |      20 | OUTSTANDING |
+| 11XX1232 | SWARNA    |   8 | C   |    13 |    14 |    20 |      17 | OUTSTANDING |
+| 11XX1232 | SWARNA    |   8 | C   |    19 |    20 |    18 |      20 | OUTSTANDING |
+| 11XX1232 | SWARNA    |   8 | C   |    18 |    20 |    16 |      19 | OUTSTANDING |
+| 11XX1232 | SWARNA    |   8 | C   |    20 |    17 |    15 |      19 | OUTSTANDING |
+| 11XX1234 | VIVEK     |   8 | C   |    19 |    20 |    20 |      20 | OUTSTANDING |
+| 11XX1234 | VIVEK     |   8 | C   |    18 |    16 |    17 |      18 | OUTSTANDING |
+| 11XX1234 | VIVEK     |   8 | C   |    20 |    19 |    20 |      20 | OUTSTANDING |
+| 11XX1234 | VIVEK     |   8 | C   |    14 |    18 |    16 |      17 | OUTSTANDING |
+| 11XX1234 | VIVEK     |   8 | C   |    20 |    18 |    19 |      20 | OUTSTANDING |
++----------+-----------+-----+-----+-------+-------+-------+---------+-------------+
+35 rows in set (0.00 sec)

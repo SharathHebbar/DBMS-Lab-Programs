@@ -1,0 +1,419 @@
+**MOVIE DATABASE**
+
+
+Setting environment for using XAMPP for Windows.
+
+mysql -u root -p -h 127.0.0.1
+Enter password:
+Welcome to the MariaDB monitor.  Commands end with ; or \g.
+Your MariaDB connection id is 3
+Server version: 10.1.38-MariaDB mariadb.org binary distribution
+
+Copyright (c) 2000, 2018, Oracle, MariaDB Corporation Ab and others.
+
+Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
+
+
+creating and using database(schema)
+
+MariaDB [(none)]> CREATE DATABASE MOVIES;
+Query OK, 1 row affected (0.01 sec)
+
+MariaDB [(none)]> SHOW DATABASES;
++--------------------+
+| Database           |
++--------------------+
+| company            |
+| examples           |
+| information_schema |
+| library            |
+| movies             |
+| mysql              |
+| performance_schema |
+| phpmyadmin         |
+| sales_order        |
+| test               |
++--------------------+
+
+MariaDB [(none)]> USE MOVIES;
+Database changed
+
+
+CREATION OF TABLES/RELATIONS:-
+
+ACTOR
+
+CREATE TABLE ACTOR (
+	ACT_ID INT (4),
+	ACT_NAME VARCHAR (20),
+	ACT_GENDER CHAR (1),
+	PRIMARY KEY (ACT_ID)
+); 
+
+MariaDB [MOVIES]> DESC ACTOR;
++------------+-------------+------+-----+---------+-------+
+| Field      | Type        | Null | Key | Default | Extra |
++------------+-------------+------+-----+---------+-------+
+| ACT_ID     | int(4)      | NO   | PRI | NULL    |       |
+| ACT_NAME   | varchar(40) | YES  |     | NULL    |       |
+| ACT_GENDER | char(1)     | YES  |     | NULL    |       |
++------------+-------------+------+-----+---------+-------+
+3 rows in set (0.01 sec)
+
+DIRECTOR
+
+CREATE TABLE DIRECTOR (
+	DIR_ID INT (4),
+	DIR_NAME VARCHAR (20),
+	DIR_PHONE BIGINT (10),
+	PRIMARY KEY (DIR_ID)
+); 
+
+MariaDB [MOVIES]> DESC DIRECTOR;
++-----------+-------------+------+-----+---------+-------+
+| Field     | Type        | Null | Key | Default | Extra |
++-----------+-------------+------+-----+---------+-------+
+| DIR_ID    | int(4)      | NO   | PRI | NULL    |       |
+| DIR_NAME  | varchar(20) | YES  |     | NULL    |       |
+| DIR_PHONE | bigint(10)  | YES  |     | NULL    |       |
++-----------+-------------+------+-----+---------+-------+
+3 rows in set (0.01 sec)
+
+MOVIES
+
+CREATE TABLE MOVIES (
+	MOV_ID INT(4),
+	MOV_TITLE VARCHAR (25),
+	MOV_YEAR INT (4),
+	MOV_LANG VARCHAR (12),
+	DIR_ID INT (4),
+	CONSTRAINT FK_M FOREIGN KEY(DIR_ID)REFERENCES DIRECTOR (DIR_ID),
+	PRIMARY KEY (MOV_ID)
+);
+
+MariaDB [MOVIES]> DESC MOVIES;
++-----------+-------------+------+-----+---------+-------+
+| Field     | Type        | Null | Key | Default | Extra |
++-----------+-------------+------+-----+---------+-------+
+| MOV_ID    | int(4)      | NO   | PRI | NULL    |       |
+| MOV_TITLE | varchar(60) | YES  |     | NULL    |       |
+| MOV_YEAR  | int(4)      | YES  |     | NULL    |       |
+| MOV_LANG  | varchar(20) | YES  |     | NULL    |       |
+| DIR_ID    | int(4)      | YES  | MUL | NULL    |       |
++-----------+-------------+------+-----+---------+-------+
+5 rows in set (0.01 sec)
+
+MOVIE_CAST
+
+CREATE TABLE MOVIE_CAST ( 
+	ACT_ID INT (4),
+	MOV_ID INT(4),
+	ROLE VARCHAR(10),
+	CONSTRAINT FK FOREIGN KEY (ACT_ID) REFERENCES ACTOR (ACT_ID), 
+	CONSTRAINT FK_M_C FOREIGN KEY (MOV_ID) REFERENCES MOVIES (MOV_ID),
+	PRIMARY KEY (ACT_ID, MOV_ID)
+); 
+
+MariaDB [MOVIES]> DESC MOVIE_CAST;
++--------+-------------+------+-----+---------+-------+
+| Field  | Type        | Null | Key | Default | Extra |
++--------+-------------+------+-----+---------+-------+
+| ACT_ID | int(4)      | NO   | PRI | NULL    |       |
+| MOV_ID | int(4)      | NO   | PRI | NULL    |       |
+| ROLE   | varchar(35) | YES  |     | NULL    |       |
++--------+-------------+------+-----+---------+-------+
+3 rows in set (0.01 sec)
+
+RATING
+
+CREATE TABLE RATING (
+	MOV_ID INT (4),
+	REV_STARS VARCHAR (25),
+	CONSTRAINT FK_R FOREIGN KEY (MOV_ID) REFERENCES MOVIES (MOV_ID),
+	PRIMARY KEY (MOV_ID)
+); 
+
+MariaDB [MOVIES]> DESC RATING;
++-----------+-------------+------+-----+---------+-------+
+| Field     | Type        | Null | Key | Default | Extra |
++-----------+-------------+------+-----+---------+-------+
+| MOV_ID    | int(4)      | NO   | PRI | NULL    |       |
+| REV_STARS | varchar(25) | YES  |     | NULL    |       |
++-----------+-------------+------+-----+---------+-------+
+2 rows in set (0.01 sec)
+
+INSERTING VALUES TO TABLES/RELATIONS
+
+ACTOR
+
+MariaDB [MOVIES]> INSERT INTO ACTOR VALUES(401,'AMBARISH','M');
+
+MariaDB [MOVIES]> SELECT * FROM ACTOR;
++--------+----------------+------------+
+| ACT_ID | ACT_NAME       | ACT_GENDER |
++--------+----------------+------------+
+|    401 | AMBARISH       | M          |
+|    402 | KARISHMA       | F          |
+|    403 | SHAHRUKH KHAN  | M          |
+|    404 | KAJOL          | F          |
+|    405 | AAMIR KHAN     | M          |
+|    406 | PRABHAS        | M          |
+|    407 | SRIDEVI        | F          |
+|    408 | SHIVANSH KOTIA | M          |
+|    409 | PRAKASH RAJ          | M          |
+|    410 | SUDEEP   | M          |
+|    411 | SUSHANT SINGH  | M          |
+|    412 | ANUPAM KHER    | M          |
+|    413 | DHANUSH        | M          |
+|    414 | KEERTHY SURESH | F          |
+|    415 | VICKY KAUSHEL  | M          |
+|    416 | RAJIT KAPPOR   | M          |
+|    417 | RAKSHIT SHETTY | M          |
+|    418 | DARSHAN        | M          |
+|    419 | VIDYA BALAN    | F          |
+|    420 | SANJANA SANGHI | F          |
++--------+----------------+------------+
+20 rows in set (0.00 sec)
+
+DIRECTOR
+
+MariaDB [MOVIES]> INSERT INTO DIRECTOR VALUES(50,'ABCD',8125112231);
+
+MariaDB [MOVIES]> SELECT * FROM DIRECTOR;
++--------+----------+------------+
+| DIR_ID | DIR_NAME | DIR_PHONE  |
++--------+----------+------------+
+|     50 | ABCD     | 8125112231 |
+|     51 | EFG      | 8325122331 |
+|     52 | HIJ      | 8534123451 |
+|     53 | KLM      | 9036966552 |
+|     54 | NOP      | 9063966552 |
+|     55 | QRS      | 9741354132 |
+|     56 | TUV      | 7259194114 |
+|     57 | XYZ      | 8369145692 |
++--------+----------+------------+
+8 rows in set (0.00 sec)
+
+
+MOVIES
+
+MariaDB [MOVIES]> INSERT INTO MOVIES VALUES(1001,'CHAKRAVARTHY',1990,'KANNADA',50);
+
+MariaDB [MOVIES]> SELECT * FROM MOVIES;
++--------+------------------------------+----------+----------+--------+
+| MOV_ID | MOV_TITLE                    | MOV_YEAR | MOV_LANG | DIR_ID |
++--------+------------------------------+----------+----------+--------+
+|   1001 | CHAKRAVARTHY                 |     1990 | KANNADA  |     50 |
+|   1002 | DDLJ                         |     1995 | HINDI    |     51 |
+|   1003 | 3 IDIOTS                     |     2009 | HINDI    |     52 |
+|   1004 | DARLING                      |     2010 | TELUGU   |     52 |
+|   1005 | ENGLISH VINGLISH             |     2012 | HINDI    |     53 |
+|   1006 | RANNA                        |     2015 | KANNADA  |     50 |
+|   1007 | M.S DHONI : THE UNTOLD STORY |     2016 | HINDI    |     54 |
+|   1008 | VADA CHENNAI                 |     2018 | TAMIL    |     54 |
+|   1009 | MAHANATI                     |     2018 | TELUGU   |     55 |
+|   1010 | URI : THE SURGICAL STRIKE    |     2018 | HINDI    |     56 |
+|   1011 | AVANE SRIMANNARAYANA         |     2019 | KANNADA  |     56 |
+|   1012 | PAILWAAN                     |     2019 | KANNADA  |     50 |
+|   1013 | YAJAMANA                     |     2019 | KANNADA  |     57 |
+|   1014 | SHAKUNTALA DEVI              |     2020 | HINDI    |     50 |
+|   1015 | DIL BECHARA                  |     2020 | HINDI    |     57 |
++--------+------------------------------+----------+----------+--------+
+15 rows in set (0.00 sec)
+
+MOVIE_CAST
+
+MariaDB [MOVIES]> INSERT INTO MOVIE_CAST VALUES(401,1001,'HERO');
+
+MariaDB [MOVIES]> SELECT * FROM MOVIE_CAST;
++--------+--------+----------------+
+| ACT_ID | MOV_ID | ROLE           |
++--------+--------+----------------+
+|    401 |   1001 | HERO           |
+|    402 |   1001 | HEROINE        |
+|    403 |   1002 | HERO           |
+|    404 |   1002 | HEROINE        |
+|    405 |   1003 | HERO           |
+|    406 |   1004 | HERO           |
+|    407 |   1005 | HEROINE        |
+|    408 |   1005 | SON            |
+|    409 |   1006 | GRAND FATHER   |
+|    410 |   1006 | HERO           |
+|    410 |   1012 | HERO           |
+|    411 |   1007 | HERO           |
+|    411 |   1015 | HERO           |
+|    412 |   1007 | FATHER         |
+|    413 |   1008 | HERO           |
+|    414 |   1009 | HEROINE        |
+|    415 |   1010 | HERO           |
+|    416 |   1010 | PRIME MINISTER |
+|    417 |   1011 | HERO           |
+|    418 |   1013 | HERO           |
+|    419 |   1014 | HEROINE        |
+|    420 |   1015 | HEROINE        |
++--------+--------+----------------+
+22 rows in set (0.00 sec)
+
+RATING
+
+MariaDB [MOVIES]> INSERT INTO RATING VALUES(1001,'3.5');
+
+MariaDB [MOVIES]> SELECT * FROM RATING;
++--------+-----------+
+| MOV_ID | REV_STARS |
++--------+-----------+
+|   1001 | 3.5       |
+|   1002 | 4         |
+|   1003 | 5         |
+|   1004 | 3.8       |
+|   1005 | 4         |
+|   1006 | 3.5       |
+|   1007 | 5         |
+|   1008 | 0         |
+|   1009 | 4         |
+|   1010 | 5         |
+|   1011 | 3.7       |
+|   1012 | 5         |
+|   1013 | 4.2       |
+|   1014 | 4.1       |
+|   1015 | 4.8       |
++--------+-----------+
+15 rows in set (0.00 sec)
+
+
+QUERIES:-
+
+QUERY 1
+
+SELECT MOV_TITLE
+FROM MOVIES
+WHERE DIR_ID IN (SELECT DIR_ID
+		  FROM DIRECTOR
+                                  WHERE DIR_NAME = 'ABCD');
+
++-----------------+
+| MOV_TITLE       |
++-----------------+
+| CHAKRAVARTHY    |
+| RANNA           |
+| PAILWAAN        |
+| SHAKUNTALA DEVI |
++-----------------+
+4 rows in set (0.01 sec)
+
+QUERY 3
+
+SELECT ACT_NAME, MOV_TITLE, MOV_YEAR 
+FROM ACTOR A JOIN 
+MOVIE_CAST C
+ON A.ACT_ID=C.ACT_ID
+JOIN MOVIES M
+ON C.MOV_ID=M.MOV_ID
+WHERE M.MOV_YEAR NOT BETWEEN 2000 AND 2015;
+
++----------------+------------------------------+----------+
+| ACT_NAME       | MOV_TITLE                    | MOV_YEAR |
++----------------+------------------------------+----------+
+| AMBARISH       | CHAKRAVARTHY                 |     1990 |
+| KARISHMA       | CHAKRAVARTHY                 |     1990 |
+| SHAHRUKH KHAN  | DDLJ                         |     1995 |
+| KAJOL          | DDLJ                         |     1995 |
+| SUSHANT SINGH  | M.S DHONI : THE UNTOLD STORY |     2016 |
+| ANUPAM KHER    | M.S DHONI : THE UNTOLD STORY |     2016 |
+| DHANUSH        | VADA CHENNAI                 |     2018 |
+| KEERTHY SURESH | MAHANATI                     |     2018 |
+| VICKY KAUSHEL  | URI : THE SURGICAL STRIKE    |     2018 |
+| RAJIT KAPPOR   | URI : THE SURGICAL STRIKE    |     2018 |
+| RAKSHIT SHETTY | AVANE SRIMANNARAYANA         |     2019 |
+| PRAKASH RAJ    | PAILWAAN                     |     2019 |
+| DARSHAN        | YAJAMANA                     |     2019 |
+| VIDYA BALAN    | SHAKUNTALA DEVI              |     2020 |
+| SUSHANT SINGH  | DIL BECHARA                  |     2020 |
+| SANJANA SANGHI | DIL BECHARA                  |     2020 |
++----------------+------------------------------+----------+
+16 rows in set (0.00 sec)
+
+QUERY 4
+
+SELECT MOV_TITLE, REV_STARS
+FROM MOVIES
+INNER JOIN RATING USING (MOV_ID) GROUP BY MOV_TITLE
+HAVING MAX(REV_STARS)>0
+ORDER BY MOV_TITLE; 
+
++------------------------------+-----------+
+| MOV_TITLE                    | REV_STARS |
++------------------------------+-----------+
+| 3 IDIOTS                     | 5         |
+| AVANE SRIMANNARAYANA         | 3.7       |
+| CHAKRAVARTHY                 | 3.5       |
+| DARLING                      | 3.8       |
+| DDLJ                         | 4         |
+| DIL BECHARA                  | 5         |
+| ENGLISH VINGLISH             | 4         |
+| M.S DHONI : THE UNTOLD STORY | 5         |
+| MAHANATI                     | 4         |
+| PAILWAAN                     | 5         |
+| RANNA                        | 3.5       |
+| SHAKUNTALA DEVI              | 4.1       |
+| URI : THE SURGICAL STRIKE    | 5         |
+| YAJAMANA                     | 4.5       |
++------------------------------+-----------+
+14 rows in set (0.00 sec)
+
+QUERY 5
+
+UPDATE RATING
+SET REV_STARS=5
+WHERE MOV_ID IN (SELECT MOV_ID FROM MOVIES
+		 WHERE DIR_ID IN (SELECT DIR_ID
+				FROM DIRECTOR
+				WHERE DIR_NAME = 'XYZ')); 
+
+MariaDB [MOVIES]> SELECT * FROM RATING;
++--------+-----------+
+| MOV_ID | REV_STARS |
++--------+-----------+
+|   1001 | 3.5       |
+|   1002 | 4         |
+|   1003 | 5         |
+|   1004 | 3.8       |
+|   1005 | 4         |
+|   1006 | 3.5       |
+|   1007 | 5         |
+|   1008 | 0         |
+|   1009 | 4         |
+|   1010 | 5         |
+|   1011 | 3.7       |
+|   1012 | 5         |
+|   1013 | 5         |
+|   1014 | 4.1       |
+|   1015 | 5         |
++--------+-----------+
+15 rows in set (0.00 sec)
+
+QUERY 2
+
+//WRONG
+SELECT MOV_TITLE
+FROM MOVIES M, MOVIE_CAST C
+WHERE M.MOV_ID=C.MOV_ID AND ACT_ID IN (SELECT ACT_ID
+					FROM MOVIE_CAST GROUP BY ACT_ID HAVING COUNT(ACT_ID)>1)
+GROUP BY MOV_TITLE HAVING
+COUNT(*)>1; //
+
+SELECT MOV_TITLE
+FROM MOVIES M, MOVIE_CAST C
+WHERE M.MOV_ID=C.MOV_ID AND ACT_ID IN (SELECT ACT_ID
+					FROM MOVIE_CAST GROUP BY ACT_ID HAVING COUNT(ACT_ID)>1)
+GROUP BY MOV_TITLE; 
+
++------------------------------+
+| MOV_TITLE                    |
++------------------------------+
+| RANNA                        |
+| M.S DHONI : THE UNTOLD STORY |
+| PAILWAAN                     |
+| DIL BECHARA                  |
++------------------------------+
+4 rows in set (0.00 sec)

@@ -1,0 +1,429 @@
+**COMPANY DATABASE**
+
+
+Setting environment for using XAMPP for Windows.
+
+mysql -u root -p -h 127.0.0.1
+Enter password:
+Welcome to the MariaDB monitor.  Commands end with ; or \g.
+Your MariaDB connection id is 3
+Server version: 10.1.38-MariaDB mariadb.org binary distribution
+
+Copyright (c) 2000, 2018, Oracle, MariaDB Corporation Ab and others.
+
+Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
+
+
+creating and using database(schema)
+
+MariaDB [(none)]> CREATE DATABASE COMPANY;
+
+MariaDB [(none)]> SHOW DATABASES;
+
+MariaDB [(none)]> SHOW DATABASES;
++--------------------+
+| Database           |
++--------------------+
+| college            |
+| company            |
+| examples           |
+| first_db           |
+| information_schema |
+| library            |
+| management         |
+| movies             |
+| mysql              |
+| performance_schema |
+| phonenumber        |
+| phpmyadmin         |
+| project            |
+| sales_order        |
+| test               |
++--------------------+
+15 rows in set (0.00 sec)
+
+MariaDB [(none)]> USE COMPANY;
+Database changed
+
+CREATING TABLES:-
+
+DEPARTMENT
+
+CREATE TABLE DEPARTMENT
+(
+	DNO INT(2),
+	DNAME VARCHAR(20),
+	MGRSTARTDATE DATE,
+	PRIMARY KEY(DNO)
+);
+
+MariaDB [COMPANY]> DESC DEPARTMENT;
++--------------+-------------+------+-----+---------+-------+
+| Field        | Type        | Null | Key | Default | Extra |
++--------------+-------------+------+-----+---------+-------+
+| DNO          | int(2)      | NO   | PRI | NULL    |       |
+| DNAME        | varchar(20) | YES  |     | NULL    |       |
+| MGRSTARTDATE | date        | YES  |     | NULL    |       |
++--------------+-------------+------+-----+---------+-------+
+3 rows in set (0.01 sec)
+
+EMPLOYEE
+
+CREATE TABLE EMPLOYEE
+(
+	SSN VARCHAR(10),
+	FNAME VARCHAR(20),
+	LNAME VARCHAR(20),
+	ADDRESS VARCHAR(30),
+	SEX CHAR(1),
+	SALARY FLOAT,
+	SUPERSSN VARCHAR(10),
+	DNO INT(2),
+	CONSTRAINT FK_S FOREIGN KEY(SUPERSSN)REFERENCES EMPLOYEE(SSN) ON DELETE CASCADE,
+	CONSTRAINT FK_D FOREIGN KEY(DNO)REFERENCES DEPARTMENT(DNO) ON DELETE CASCADE,
+	PRIMARY KEY(SSN)
+);
+
+MariaDB [COMPANY]> DESC EMPLOYEE;
++----------+-------------+------+-----+---------+-------+
+| Field    | Type        | Null | Key | Default | Extra |
++----------+-------------+------+-----+---------+-------+
+| SSN      | varchar(10) | NO   | PRI | NULL    |       |
+| FNAME    | varchar(20) | YES  |     | NULL    |       |
+| LNAME    | varchar(20) | YES  |     | NULL    |       |
+| ADDRESS  | varchar(30) | YES  |     | NULL    |       |
+| SEX      | char(1)     | YES  |     | NULL    |       |
+| SALARY   | float       | YES  |     | NULL    |       |
+| SUPERSSN | varchar(10) | YES  | MUL | NULL    |       |
+| DNO      | int(2)      | YES  | MUL | NULL    |       |
++----------+-------------+------+-----+---------+-------+
+8 rows in set (0.01 sec)
+
+ALTERING TABLE DEPARTMENT:
+
+ALTER TABLE DEPARTMENT ADD MGRSSN VARCHAR(10) ;
+ALTER TABLE DEPARTMENT ADD CONSTRAINT FK_D_M FOREIGN KEY(MGRSSN)REFERENCES EMPLOYEE(SSN) ON DELETE CASCADE;
+
+MariaDB [COMPANY]> DESC DEPARTMENT;
++--------------+-------------+------+-----+---------+-------+
+| Field        | Type        | Null | Key | Default | Extra |
++--------------+-------------+------+-----+---------+-------+
+| DNO          | int(2)      | NO   | PRI | NULL    |       |
+| DNAME        | varchar(20) | YES  |     | NULL    |       |
+| MGRSTARTDATE | date        | YES  |     | NULL    |       |
+| MGRSSN       | varchar(10) | YES  | MUL | NULL    |       |
++--------------+-------------+------+-----+---------+-------+
+4 rows in set (0.01 sec)
+
+DLOCATION
+
+CREATE TABLE DLOCATION 
+(
+	DNO INT(2),
+	DLOC VARCHAR(25),
+	CONSTRAINT FK_D_N FOREIGN KEY(DNO)REFERENCES DEPARTMENT(DNO) ON DELETE CASCADE,
+	PRIMARY KEY(DNO,DLOC)
+);
+	
+MariaDB [COMPANY]> DESC DLOCATION;
++-------+-------------+------+-----+---------+-------+
+| Field | Type        | Null | Key | Default | Extra |
++-------+-------------+------+-----+---------+-------+
+| DNO   | int(2)      | NO   | PRI | NULL    |       |
+| DLOC  | varchar(25) | NO   | PRI | NULL    |       |
++-------+-------------+------+-----+---------+-------+
+2 rows in set (0.01 sec)
+
+PROJECT
+
+CREATE TABLE PROJECT
+(
+	PNO INT(4),
+	PNAME VARCHAR(20),
+	PLOCATION VARCHAR(20),
+	DNO INT(2),
+	CONSTRAINT FK_P FOREIGN KEY(DNO)REFERENCES DEPARTMENT(DNO) ON DELETE CASCADE,
+	PRIMARY KEY(PNO)
+);
+
+MariaDB [COMPANY]> DESC PROJECT;
++-----------+-------------+------+-----+---------+-------+
+| Field     | Type        | Null | Key | Default | Extra |
++-----------+-------------+------+-----+---------+-------+
+| PNO       | int(4)      | NO   | PRI | NULL    |       |
+| PNAME     | varchar(20) | YES  |     | NULL    |       |
+| PLOCATION | varchar(20) | YES  |     | NULL    |       |
+| DNO       | int(2)      | YES  | MUL | NULL    |       |
++-----------+-------------+------+-----+---------+-------+
+4 rows in set (0.01 sec)
+
+WORKS_ON
+
+CREATE TABLE WORKS_ON
+(
+	SSN VARCHAR(5),
+	PNO INT(4),
+	HOURS FLOAT,
+	CONSTRAINT FK_W_S FOREIGN KEY(SSN)REFERENCES EMPLOYEE(SSN) ON DELETE CASCADE,
+	CONSTRAINT FK_W_P FOREIGN KEY(PNO)REFERENCES PROJECT(PNO) ON DELETE CASCADE,
+	PRIMARY KEY(SSN,PNO)
+);
+
+
+INSERTING VALUES:
+
+DEPARTMENT
+
+MariaDB [COMPANY]> INSERT INTO DEPARTMENT (DNO,DNAME) VALUES (1,'HEADQUATERS');
+Query OK, 1 row affected (0.009 sec)
+
+MariaDB [COMPANY]> SELECT * FROM DEPARTMENT;
++-----+-------------+--------------+--------+
+| DNO | DNAME       | MGRSTARTDATE | MGRSSN |
++-----+-------------+--------------+--------+
+|   1 | HEADQUATERS | NULL         | NULL   |
+|   2 | RESEARCH    | NULL         | NULL   |
+|   3 | SALES       | NULL         | NULL   |
+|   4 | MARKETING   | NULL         | NULL   |
+|   5 | ACCOUNTS    | NULL         | NULL   |
++-----+-------------+--------------+--------+
+5 rows in set (0.00 sec)
+
+EMPLOYEE
+
+MariaDB [COMPANY]> INSERT INTO EMPLOYEE(SSN,FNAME,LNAME,ADDRESS,SEX,SALARY,DNO) VALUES('HQ01','VINOD','KUMAR','BENGALURU','M',1000000,1);
+
+MariaDB [COMPANY]> SELECT * FROM EMPLOYEE;
++------+---------------+---------+-----------+------+---------+----------+------+
+| SSN  | FNAME         | LNAME   | ADDRESS   | SEX  | SALARY  | SUPERSSN | DNO  |
++------+---------------+---------+-----------+------+---------+----------+------+
+| AC01 | RAMESH        | REDDY   | MYSORE    | M    |  620000 | NULL     |    5 |
+| AC02 | REENA         | SCOTT   | BENGALURU | F    |  610000 | NULL     |    5 |
+| AC03 | PETER         | JACKSON | TUMKUR    | M    |  725000 | NULL     |    5 |
+| AC04 | JOYCE         | SMITH   | SHIMOGA   | F    |  605000 | NULL     |    5 |
+| HQ01 | VINOD         | KUMAR   | BENGALURU | M    | 1000000 | NULL     |    1 |
+| MK01 | MICHAEL       | SMITH   | TUMKUR    | F    |  400000 | NULL     |    4 |
+| MK02 | VENU          | GOPAL   | MYSORE    | M    |  610000 | NULL     |    4 |
+| MK03 | MARY          | SCOTT   | BENGALURU | F    |  800000 | NULL     |    4 |
+| MK04 | PRASHANTH     | JAIN    | KOLOR     | M    |  500535 | NULL     |    4 |
+| MK05 | SWARNA        | PRIYA   | BENGALURU | F    |  412000 | NULL     |    4 |
+| MK06 | SYED ZULFIQAR | ALI     | KOLOR     | M    |  725000 | NULL     |    4 |
+| RE01 | ARUN          | ROY     | BENGALURU | M    |  810000 | NULL     |    2 |
+| RE02 | FRANKLIN      | SCOTT   | BENGALURU | M    |  750000 | NULL     |    2 |
+| SL01 | RAVI          | SHANKAR | SHIMOGA   | M    |  750000 | NULL     |    3 |
+| SL02 | REENA         | ROY     | BENGALURU | F    |  810000 | NULL     |    3 |
++------+---------------+---------+-----------+------+---------+----------+------+
+15 rows in set (0.00 sec)
+
+DEPARTMENT
+
+MariaDB [COMPANY]> UPDATE DEPARTMENT SET MGRSSN='HQ01' WHERE DNO=1;
+Query OK, 1 row affected (0.01 sec)
+Rows matched: 1  Changed: 1  Warnings: 0
+
+MariaDB [COMPANY]> UPDATE DEPARTMENT SET MGRSTARTDATE='2019-05-22' WHERE DNO=1;
+Query OK, 1 row affected (0.00 sec)
+Rows matched: 1  Changed: 1  Warnings: 0
+
+//FINAL DEPARTMENT TABLE
+MariaDB [COMPANY]> SELECT * FROM DEPARTMENT;
++-----+-------------+--------------+--------+
+| DNO | DNAME       | MGRSTARTDATE | MGRSSN |
++-----+-------------+--------------+--------+
+|   1 | HEADQUATERS | 2019-05-22   | HQ01   |
+|   2 | RESEARCH    | 2018-09-11   | RE02   |
+|   3 | SALES       | 2020-02-28   | SL01   |
+|   4 | MARKETING   | 2019-08-16   | MK03   |
+|   5 | ACCOUNTS    | 2020-01-25   | AC02   |
++-----+-------------+--------------+--------+
+5 rows in set (0.00 sec)
+
+EMPLOYEE
+
+MariaDB [COMPANY]> UPDATE EMPLOYEE SET SUPERSSN='HQ01' WHERE SSN='AC01';
+Query OK, 1 row affected (0.01 sec)
+Rows matched: 1  Changed: 1  Warnings: 0
+
+//FINAL EMPLOYEE TABLE
+MariaDB [COMPANY]> SELECT * FROM EMPLOYEE;
++------+---------------+---------+-----------+------+---------+----------+------+
+| SSN  | FNAME         | LNAME   | ADDRESS   | SEX  | SALARY  | SUPERSSN | DNO  |
++------+---------------+---------+-----------+------+---------+----------+------+
+| AC01 | RAMESH        | REDDY   | MYSORE    | M    |  620000 | HQ01     |    5 |
+| AC02 | REENA         | SCOTT   | BENGALURU | F    |  610000 | HQ01     |    5 |
+| AC03 | PETER         | JACKSON | TUMKUR    | M    |  725000 | HQ01     |    5 |
+| AC04 | JOYCE         | SMITH   | SHIMOGA   | F    |  605000 | HQ01     |    5 |
+| HQ01 | VINOD         | KUMAR   | BENGALURU | M    | 1000000 | NULL     |    1 |
+| MK01 | MICHAEL       | SMITH   | TUMKUR    | F    |  400000 | SL01     |    4 |
+| MK02 | VENU          | GOPAL   | MYSORE    | M    |  610000 | SL01     |    4 |
+| MK03 | MARY          | SCOTT   | BENGALURU | F    |  800000 | SL01     |    4 |
+| MK04 | PRASHANTH     | JAIN    | KOLOR     | M    |  500535 | SL01     |    4 |
+| MK05 | SWARNA        | PRIYA   | BENGALURU | F    |  412000 | SL01     |    4 |
+| MK06 | SYED ZULFIQAR | ALI     | KOLOR     | M    |  725000 | SL01     |    4 |
+| RE01 | ARUN          | ROY     | BENGALURU | M    |  810000 | MK02     |    2 |
+| RE02 | FRANKLIN      | SCOTT   | BENGALURU | M    |  750000 | MK02     |    2 |
+| SL01 | RAVI          | SHANKAR | SHIMOGA   | M    |  750000 | AC02     |    3 |
+| SL02 | REENA         | ROY     | BENGALURU | F    |  810000 | AC02     |    3 |
++------+---------------+---------+-----------+------+---------+----------+------+
+15 rows in set (0.00 sec)
+
+DLCOATION
+
+MariaDB [COMPANY]> INSERT INTO DLOCATION VALUES(1,'BENGALURU');
+Query OK, 1 row affected (0.01 sec)
+
+MariaDB [COMPANY]> SELECT * FROM DLOCATION;
++-----+-----------+
+| DNO | DLOC      |
++-----+-----------+
+|   1 | BENGALURU |
+|   2 | MYSORE    |
+|   3 | SHIMOGA   |
+|   4 | MYSORE    |
+|   5 | BENGALURU |
++-----+-----------+
+5 rows in set (0.00 sec)
+
+PROJECT
+
+MariaDB [COMPANY]> INSERT INTO PROJECT VALUES(10,'IOT','MYSORE',2);
+Query OK, 1 row affected (0.01 sec)
+
+MariaDB [COMPANY]> SELECT * FROM PROJECT;
++-----+----------------+-----------+------+
+| PNO | PNAME          | PLOCATION | DNO  |
++-----+----------------+-----------+------+
+|  10 | IOT            | MYSORE    |    2 |
+|  11 | REORGANIZATION | BENGALURU |    1 |
+|  12 | NETWORK        | BENGALURU |    4 |
+|  13 | PRODUCT X      | MYSORE    |    3 |
+|  14 | PRODUCT Y      | BENGALURU |    3 |
+|  15 | SOCIAL SERVICE | BENGALURU |    5 |
++-----+----------------+-----------+------+
+6 rows in set (0.00 sec)
+
+WORKS_ON
+
+MariaDB [COMPANY]> INSERT INTO WORKS_ON VALUES('RE01',10,8.0);
+Query OK, 1 row affected (0.010 sec)
+
+
+MariaDB [COMPANY]> SELECT * FROM WORKS_ON;
++------+-----+-------+
+| SSN  | PNO | HOURS |
++------+-----+-------+
+| AC01 |  10 |   1.5 |
+| AC02 |  15 |     1 |
+| AC03 |  15 |  11.5 |
+| AC04 |  12 |  24.5 |
+| HQ01 |  15 |  32.5 |
+| MK02 |  14 |   5.5 |
+| MK03 |  15 |     6 |
+| MK04 |  10 |   3.5 |
+| MK05 |  13 |   4.5 |
+| MK05 |  14 |     4 |
+| MK06 |  12 |     6 |
+| RE01 |  10 |     8 |
+| RE01 |  11 |     4 |
+| RE01 |  12 |  30.2 |
+| RE01 |  13 |  10.9 |
+| RE01 |  15 |   3.5 |
+| RE02 |  10 |   2.4 |
+| RE02 |  11 |     4 |
+| SL02 |  10 |     2 |
+| SL02 |  15 |   4.5 |
++------+-----+-------+
+20 rows in set (0.00 sec)
+
+QUERIES:
+
+QUERY 1
+
+SELECT DISTINCT P.PNO
+FROM PROJECT P, WORKS_ON W, EMPLOYEE E
+WHERE P.PNO=W.PNO
+AND E.SSN=W.SSN
+AND E.LNAME='SCOTT';
+
++-----+
+| PNO |
++-----+
+|  11 |
+|  10 |
+|  15 |
++-----+
+3 rows in set (0.01 sec)
+
+
+QUERY 2
+
+SELECT E.FNAME, E.LNAME,E.SALARY,1.1 * E.SALARY AS INCR_SAL 
+FROM EMPLOYEE E, WORKS_ON W, PROJECT P
+WHERE E.SSN=W.SSN
+AND W.PNO=P.PNO
+ AND P.PNAME='IOT';
+
++-----------+-------+--------+----------+
+| FNAME     | LNAME | SALARY | INCR_SAL |
++-----------+-------+--------+----------+
+| RAMESH    | REDDY | 620000 | 682000.0 |
+| PRASHANTH | JAIN  | 500535 | 550588.5 |
+| ARUN      | ROY   | 810000 | 891000.0 |
+| FRANKLIN  | SCOTT | 750000 | 825000.0 |
+| REENA     | ROY   | 810000 | 891000.0 |
++-----------+-------+--------+----------+
+5 rows in set (0.00 sec)
+
+
+QUERY 3
+
+SELECT SUM(E.SALARY) AS SUM, MAX(E.SALARY) AS MAX, MIN(E.SALARY) AS MIN, AVG(E.SALARY) AS AVG
+FROM EMPLOYEE E, DEPARTMENT D
+WHERE E.DNO=D.DNO
+AND D.DNAME='ACCOUNTS';
+
++---------+--------+--------+-------------+
+| SUM     | MAX    | MIN    | AVG         |
++---------+--------+--------+-------------+
+| 2560000 | 725000 | 605000 | 640000.0000 |
++---------+--------+--------+-------------+
+1 row in set (0.00 sec)
+
+QUERY 4
+
+SELECT E.FNAME,E.LNAME 
+FROM EMPLOYEE E 
+WHERE NOT EXISTS(SELECT PNO FROM PROJECT 
+	                    WHERE DNO='5' AND PNO NOT IN (SELECT PNO 
+                                     FROM WORKS_ON WHERE E.SSN=SSN));
+
++-------+---------+
+| FNAME | LNAME   |
++-------+---------+
+| REENA | SCOTT   |
+| PETER | JACKSON |
+| VINOD | KUMAR   |
+| MARY  | SCOTT   |
+| ARUN  | ROY     |
+| REENA | ROY     |
++-------+---------+
+6 rows in set (0.01 sec)
+
+QUERY 5
+
+SELECT D.DNO, COUNT(*) AS NO_OF_EMPLOYEES
+FROM DEPARTMENT D, EMPLOYEE E
+WHERE D.DNO=E.DNO
+AND E.SALARY>600000 
+AND D.DNO IN (SELECT E1.DNO
+                            FROM EMPLOYEE E1 GROUP
+                            BY E1.DNO HAVING COUNT(*)>5)
+ GROUP BY D.DNO;
+
+
++-----+-----------------+
+| DNO | NO_OF_EMPLOYEES |
++-----+-----------------+
+|   4 |               3 |
++-----+-----------------+
+1 row in set (0.00 sec)
